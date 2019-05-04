@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+  <head>
+    <title>{% block title %}{% endblock %} - Crystal Clear</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    {% block add_header %}{% endblock %}
+  </head>
+
+  <body>
+    <header class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar">
+      Crystal Clear
+    </header>
+  </body>
+  <section>
+    {% block section %}{% endblock %}
+  <section>
+</html>
