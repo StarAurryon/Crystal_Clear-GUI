@@ -9,7 +9,7 @@ from flask import Flask, request, redirect, render_template, send_from_directory
 from werkzeug.utils import secure_filename
 import filetype, os, stat as st, uuid
 
-ALLOWED_EXTENSIONS = set(['flac', 'mp3', 'ogg', 'wav'])
+ALLOWED_EXTENSIONS = set(['.flac', '.mp3', '.ogg', '.wav'])
 IN_PATH = 'data/in/'
 OUT_PATH = 'data/out/'
 
@@ -54,13 +54,16 @@ def upload():
     if file.filename == '':
         return render_template('error.html')
 
+    filename = secure_filename(file.filename)
+    _, file_ext = os.path.splitext(filename)
+
+    if not file_ext in ALLOWED_EXTENSIONS:
+        return render_template('error.html')
+
     if not filetype.audio(file.read()):
         return render_template('error.html')
 
     file.seek(0)
-
-    filename = secure_filename(file.filename)
-    _, file_ext = os.path.splitext(filename)
 
     filename = str(uuid.uuid4()) + file_ext
     file.save(IN_PATH + filename)
