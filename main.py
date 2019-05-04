@@ -5,7 +5,7 @@ __copyright__ = "Copyright (C) 2019 StarAurryon"
 __license__ = "MIT"
 __version__ = "1.0"
 
-from flask import Flask, request, render_template, send_from_directory, url_for
+from flask import Flask, request, redirect, render_template, send_from_directory, url_for
 from werkzeug.utils import secure_filename
 import filetype, os, stat as st, uuid
 
@@ -16,7 +16,7 @@ OUT_PATH = 'data/out/'
 app = Flask(__name__)
 
 @app.route("/check/<string:filename>", methods=["GET"])
-def check_page(filename):
+def check(filename):
     filename = secure_filename(filename)
 
     in_files = [f for f in os.listdir(IN_PATH)
@@ -47,22 +47,22 @@ def upload_page():
 @app.route("/", methods=["POST"])
 def upload():
     if 'file' not in request.files:
-        return 'ERROR: No file part'
+        return render_template('error.html')
 
     file = request.files['file']
 
     if file.filename == '':
-        return 'ERROR: No selected file'
+        return render_template('error.html')
 
     if not filetype.audio(file.read()):
-        return 'ERROR: Not audio file'
+        return render_template('error.html')
 
     filename = secure_filename(file.filename)
     _, file_ext = os.path.splitext(filename)
 
     filename = str(uuid.uuid4()) + file_ext
     file.save(IN_PATH + filename)
-    return "OK"
+    return redirect(url_for("check", filename = filename))
 
 if __name__ == '__main__':
     app.run()
