@@ -36,7 +36,7 @@ def download(filename):
     filename = secure_filename(filename)
     out_files = [f for f in os.listdir(OUT_PATH) if os.path.isfile(os.path.join(OUT_PATH, f))]
     if filename in out_files:
-        result = send_from_directory(OUT_PATH, out_files[0], as_attachment=True)
+        result = send_from_directory(OUT_PATH, filename, as_attachment=True)
         return result
     return render_template('error.html')
 
