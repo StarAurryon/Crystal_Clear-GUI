@@ -57,6 +57,8 @@ def upload():
     if not filetype.audio(file.read()):
         return render_template('error.html')
 
+    file.seek(0)
+
     filename = secure_filename(file.filename)
     _, file_ext = os.path.splitext(filename)
 
