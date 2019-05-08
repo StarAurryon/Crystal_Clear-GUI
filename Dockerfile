@@ -7,4 +7,4 @@ RUN apt-get update && apt-get dist-upgrade -y && apt-get install -y --no-install
 WORKDIR /opt/crystal_clear-gui
 USER crystal_clear
 EXPOSE 5000
-CMD ["gunicorn3", "--access-logfile", "'-'", "-w", "4", "-b", "0.0.0.0:5000", "main:app"]
+CMD ["gunicorn3", "--access-logfile", "-", "--error-logfile", "-", "-w", "4", "-b", "0.0.0.0:5000", "main:app"]
