@@ -1,5 +1,10 @@
-{% extends 'base.html' %}
+{% extends 'home.html' %}
 {% block section %}
-  Done
-  <a href="{{link}}">Download</a>
+  <p class="lead font-weight-normal">The file has been processed and can be downloaded by clicking on the following link :</p>
+  <p class="lead font-weight-normal"><a href="{{link}}">Download</a></p>
+  <p class="lead font-weight-normal">You can submit a new file to the algorithm :</p>
+  <form action="{{link_upload}}" method="post" enctype="multipart/form-data">
+    <input type="file" name="file" id="musicToUpload">
+    <input type="submit" value="Upload Music" name="submit">
+</form>
 {% endblock %}

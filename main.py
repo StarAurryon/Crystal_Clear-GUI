@@ -5,7 +5,7 @@ __copyright__ = "Copyright (C) 2019 StarAurryon"
 __license__ = "MIT"
 __version__ = "1.0"
 
-from flask import Flask, request, redirect, render_template, send_from_directory, url_for
+from flask import Flask, request, redirect, render_template, send_from_directory, url_for, make_response
 from werkzeug.utils import secure_filename
 import filetype, os, stat as st, uuid
 
@@ -17,19 +17,25 @@ app = Flask(__name__)
 
 @app.route("/check/<string:filename>", methods=["GET"])
 def check(filename):
-    filename = secure_filename(filename)
+    if request.method == 'GET':
+        filename = secure_filename(filename)
+        in_files = [f for f in os.listdir(IN_PATH)
+            if os.path.isfile(os.path.join(IN_PATH, f))]
+        if not filename in in_files:
+            response = make_response(render_template('error.html'))
+            response.delete_cookie('filename')
+            return response
+        out_files = [f for f in os.listdir(OUT_PATH)
+            if os.path.isfile(os.path.join(OUT_PATH, f))]
+        if not filename in out_files:
+            return render_template('inprogress.html')
 
-    in_files = [f for f in os.listdir(IN_PATH)
-        if os.path.isfile(os.path.join(IN_PATH, f))]
-    if not filename in in_files:
-        return render_template('error.html')
+        return render_template('done.html',
+                               link = url_for("download", filename = filename),
+                               link_upload = url_for("upload_page"))
+    if request.method == 'POST':
+        pass
 
-    out_files = [f for f in os.listdir(OUT_PATH)
-        if os.path.isfile(os.path.join(OUT_PATH, f))]
-    if not filename in out_files:
-        return render_template('inprogress.html')
-
-    return render_template('done.html', link = url_for("download", filename = filename))
 
 @app.route("/download/<string:filename>", methods=["GET"])
 def download(filename):
@@ -42,7 +48,11 @@ def download(filename):
 
 @app.route("/", methods=["GET"])
 def upload_page():
-    return render_template('upload.html')
+    try:
+        filename = request.cookies['filename']
+        return redirect(url_for("check", filename = filename))
+    except KeyError:
+        return render_template('upload.html')
 
 @app.route("/", methods=["POST"])
 def upload():
@@ -64,10 +74,15 @@ def upload():
         return render_template('error.html')
 
     file.seek(0)
-
     filename = str(uuid.uuid4()) + file_ext
     file.save(IN_PATH + filename)
-    return redirect(url_for("check", filename = filename))
+    response = make_response(redirect(url_for("check", filename = filename)))
+    response.set_cookie('filename', filename)
+    return response
+
+@app.route("/about", methods=["GET"])
+def about_page():
+    return render_template('about.html')
 
 if __name__ == '__main__':
     app.run()

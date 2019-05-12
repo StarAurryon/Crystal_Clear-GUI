@@ -2,16 +2,44 @@
 <html>
   <head>
     <title>{% block title %}{% endblock %} - Crystal Clear</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+    <style>
+        body {
+          padding-top: 70px;
+        }
+        @media (max-width: 980px) {
+          body {
+            padding-top: 0;
+          }
+        }
+      </style>
     {% block add_header %}{% endblock %}
   </head>
 
   <body>
-    <header class="navbar navbar-expand navbar-dark flex-column flex-md-row bd-navbar">
-      Crystal Clear
+    <!-- Fixed navbar -->
+    <header>
+      <nav class="navbar navbar-expand-md navbar-light fixed-top" style="background-color:darkred">
+        <a class="navbar-brand" href="#">Crystal Clear</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+          <ul class="navbar-nav mr-auto">
+            <li class={% block home %}"nav-item active"{% endblock %}>
+              <a class="nav-link" href="/">Home </a>
+            </li>
+            <li class={% block about %}"nav-item"{% endblock %}>
+              <a class="nav-link" href="/about">About </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
     </header>
+    <section>
+      <div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center bg-light">
+        {% block section %}{% endblock %}
+      </div>
+    <section>
   </body>
-  <section>
-    {% block section %}{% endblock %}
-  <section>
 </html>
