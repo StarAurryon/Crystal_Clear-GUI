@@ -13,7 +13,7 @@ import filetype, os, stat as st, uuid
 ALLOWED_EXTENSIONS = set(['.flac', '.mp3', '.ogg', '.wav'])
 IN_PATH = 'data/in/'
 OUT_PATH = 'data/out/'
-SAMPLES_PATH = 'data/samples/'
+SAMPLES_PATH = 'samples/'
 
 app = Flask(__name__)
 
