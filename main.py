@@ -9,9 +9,11 @@ from flask import Flask, request, redirect, render_template, send_from_directory
 from werkzeug.utils import secure_filename
 import filetype, os, stat as st, uuid
 
+
 ALLOWED_EXTENSIONS = set(['.flac', '.mp3', '.ogg', '.wav'])
 IN_PATH = 'data/in/'
 OUT_PATH = 'data/out/'
+SAMPLES_PATH = 'data/samples/'
 
 app = Flask(__name__)
 
@@ -46,11 +48,35 @@ def download(filename):
         return result
     return render_template('error.html')
 
+@app.route("/samples", methods = ["GET"])
+def show_samples():
+    return render_template('samples.html')
+
+@app.route("/samples/original/<string:filename>", methods=["GET"])
+def get_original_sample(filename):
+    filename = secure_filename(filename)
+    path = f'{SAMPLES_PATH}original/'
+    samples_files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+    if filename in samples_files:
+        result = send_from_directory(path, filename, as_attachment=True)
+        return result
+    return render_template('error.html')
+
+@app.route("/samples/reconstructed/<string:filename>", methods=["GET"])
+def get_reconstructed_sample(filename):
+    filename = secure_filename(filename)
+    path = f'{SAMPLES_PATH}reconstructed/'
+    samples_files = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+    if filename in samples_files:
+        result = send_from_directory(path, filename, as_attachment=True)
+        return result
+    return render_template('error.html')
+
 @app.route("/", methods=["GET"])
 def upload_page():
     try:
         filename = request.cookies['filename']
-        return redirect(url_for("check", filename = filename))
+        return redirect(url_for("check", filename=filename))
     except KeyError:
         return render_template('upload.html')
 
@@ -77,7 +103,7 @@ def upload():
     filename = str(uuid.uuid4()) + file_ext
     file.save(IN_PATH + filename)
     response = make_response(redirect(url_for("check", filename = filename)))
-    response.set_cookie('filename', filename)
+    response.set_cookie('filename', filename, max_age=3600)
     return response
 
 @app.route("/about", methods=["GET"])

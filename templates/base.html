@@ -25,6 +25,7 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
+          {% block nav_bar %}
           <ul class="navbar-nav mr-auto">
             <li class={% block home %}"nav-item active"{% endblock %}>
               <a class="nav-link" href="/">Home </a>
@@ -32,7 +33,11 @@
             <li class={% block about %}"nav-item"{% endblock %}>
               <a class="nav-link" href="/about">About </a>
             </li>
+            <li class={% block Samples %}"nav-item"{% endblock %}>
+                <a class="nav-link" href="/samples">Samples </a>
+            </li>
           </ul>
+          {% endblock %}
         </div>
       </nav>
     </header>
@@ -40,6 +45,7 @@
       <div class="position-relative overflow-hidden p-3 p-md-5 m-md-3 text-center bg-light">
         {% block section %}{% endblock %}
       </div>
-    <section>
+    </section>
+    {% block add_body %}{% endblock %}
   </body>
 </html>

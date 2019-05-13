@@ -1,6 +1,11 @@
 {% extends 'home.html' %}
 {% block section %}
-  <p class="lead font-weight-normal">The file has been processed and can be downloaded by clicking on the following link :</p>
+  <p class="lead font-weight-normal">The file has been processed :</p>
+  <audio controls>
+      <source src="{{link}}" >
+      Your browser does not support the audio element.
+  </audio>
+  <p class="lead font-weight-normal"> It can be downloaded by clicking on the following link :</p>
   <p class="lead font-weight-normal"><a href="{{link}}">Download</a></p>
   <p class="lead font-weight-normal">You can submit a new file to the algorithm :</p>
   <form action="{{link_upload}}" method="post" enctype="multipart/form-data">
