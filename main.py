@@ -7,10 +7,11 @@ __version__ = "1.0"
 
 from flask import Flask, request, redirect, render_template, send_from_directory, url_for, make_response
 from werkzeug.utils import secure_filename
-import filetype.match, os, stat as st, uuid
+import filetype, os, stat as st, uuid
+from filetype.types.audio import *
 
 
-ALLOWED_EXTENSIONS = set(['.flac', '.mp3', '.ogg', '.wav'])
+ALLOWED_EXTENSIONS = dict({'.flac': Flac, '.mp3': Mp3, '.ogg': Ogg, '.wav': Wav})
 IN_PATH = 'data/in/'
 OUT_PATH = 'data/out/'
 SAMPLES_PATH = 'samples/'
@@ -93,18 +94,16 @@ def upload():
     filename = secure_filename(file.filename)
     _, file_ext = os.path.splitext(filename)
 
-    if not file_ext in ALLOWED_EXTENSIONS:
-        return render_template('error.html')
+    if file_ext in ALLOWED_EXTENSIONS:
+        if isinstance(filetype.audio_match(file.read()), ALLOWED_EXTENSIONS[file_ext]):
+            file.seek(0)
+            filename = str(uuid.uuid4()) + file_ext
+            file.save(IN_PATH + filename)
+            response = make_response(redirect(url_for("check", filename = filename)))
+            response.set_cookie('filename', filename, max_age=3600)
+            return response
 
-    if filetype.audio_match(file.read()) is None:
-        return render_template('error.html')
-
-    file.seek(0)
-    filename = str(uuid.uuid4()) + file_ext
-    file.save(IN_PATH + filename)
-    response = make_response(redirect(url_for("check", filename = filename)))
-    response.set_cookie('filename', filename, max_age=3600)
-    return response
+    return render_template('error.html')
 
 @app.route("/about", methods=["GET"])
 def about_page():
