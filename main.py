@@ -7,7 +7,7 @@ __version__ = "1.0"
 
 from flask import Flask, request, redirect, render_template, send_from_directory, url_for, make_response
 from werkzeug.utils import secure_filename
-import filetype, os, stat as st, uuid
+import filetype.match, os, stat as st, uuid
 
 
 ALLOWED_EXTENSIONS = set(['.flac', '.mp3', '.ogg', '.wav'])
@@ -96,7 +96,7 @@ def upload():
     if not file_ext in ALLOWED_EXTENSIONS:
         return render_template('error.html')
 
-    if not filetype.audio(file.read()):
+    if filetype.audio_match(file.read()) is None:
         return render_template('error.html')
 
     file.seek(0)
